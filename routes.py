@@ -62,6 +62,14 @@ def getPrediction():
 
     mldb.log(input_data)
 
+    import urllib2
+    try:
+        response = urllib2.urlopen(input_data["image_url"])
+        if(response.getcode() != 200):
+            return ("Error opening image: %s. URL: %s" % (str(response.info()), input_data["image_url"]), 400)
+    except Exception as e:
+        return ("Error opening image: %s. URL: %s" % (str(e), input_data["image_url"]), 400)
+
     score_query_rez = mldb2.query("""
             SELECT explorator_cls_%s(
                             {

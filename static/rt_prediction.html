@@ -119,7 +119,7 @@
 $( document ).ready(function() {
 
     function endsWith(str, suffix) {
-        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+        return str.toLowerCase().indexOf(suffix, str.length - suffix.length) !== -1;
     }
 
     $("#sampleAdiv").hide();
@@ -147,7 +147,7 @@ $( document ).ready(function() {
     $("#submitButton").click(function() {
 
         url = $('#imageUrl').val();
-        if(!url.endsWith(".jpg") && !url.endsWith(".jpeg")) {
+        if(!endsWith(url, ".jpg") && !endsWith(url, ".jpeg")) {
             alert("Real-time prediction only supports JPEG images");
             return false;
         }
