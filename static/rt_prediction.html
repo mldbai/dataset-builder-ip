@@ -35,6 +35,7 @@
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
         <button type="button" id="submitButton" class="btn btn-primary">Classify</button>
+        <img src="gears.gif" id="gears">
     </div>
     <br><br>
   </div>
@@ -118,10 +119,7 @@
 <script>
 $( document ).ready(function() {
 
-    function endsWith(str, suffix) {
-        return str.toLowerCase().indexOf(suffix, str.length - suffix.length) !== -1;
-    }
-
+    $("#gears").hide();
     $("#sampleAdiv").hide();
     $("#sampleBdiv").hide();
     $("#predictionPannel").hide();
@@ -144,14 +142,22 @@ $( document ).ready(function() {
       $("#spinner").hide()
     }
 
-    $("#submitButton").click(function() {
-
-        url = $('#imageUrl').val();
-        if(!endsWith(url, ".jpg") && !endsWith(url, ".jpeg")) {
-            alert("Real-time prediction only supports JPEG images");
-            return false;
+    $.toggleSubmit = function(enable) {
+        if(enable) {
+            $("#gears").hide();
+            $("#submitButton").text('Classify');
+            $("#submitButton").prop('disabled', false);
         }
+        else {
+            $("#gears").show();
+            $("#submitButton").text('Processing...');
+            $("#submitButton").prop('disabled', true);
+        }
+    }
 
+    $("#submitButton").click(function() {
+        $.toggleSubmit(false);
+        url = $('#imageUrl').val();
         $.ajax({
           type: "POST",
           url: "../prediction",
@@ -160,12 +166,14 @@ $( document ).ready(function() {
                 "image_url": url
             },
           dataType: "json",
-            error: (function(msg) {
-                console.log(msg);
-                alert( "An exception occured :(\n" + 
-                    JSON.stringify(JSON.parse(msg.responseText), null, 2));
-              }),
+          error: (function(msg) {
+            $.toggleSubmit(true);
+            console.log(msg);
+            alert( "An exception occured :(\n" + 
+                JSON.stringify(JSON.parse(msg.responseText), null, 2));
+          }),
           success: function( data ) {
+                $.toggleSubmit(true);
                 // {"example_image":{"A":"castle-3","B":"cabin-2"},"prediction":["B",0]}
 
                 $("#sampleAdiv").show();

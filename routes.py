@@ -70,6 +70,12 @@ def getPrediction():
     except Exception as e:
         return ("Error opening image: %s. URL: %s" % (str(e), input_data["image_url"]), 400)
 
+    mime = response.info()['Content-type']
+    mldb.log(str(mime))
+    if not mime.endswith("jpeg"):
+        return ("Real-time prediction only supports JPEG images. Mime type was '%s'" % mime, 400)
+
+
     score_query_rez = mldb2.query("""
             SELECT explorator_cls_%s(
                             {
